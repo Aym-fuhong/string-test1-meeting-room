@@ -13,9 +13,9 @@ function printReceipt(tags) {
   let totalPrices = calculateTotalPrices(promotedItems);
   let receipt = buildReceipt(promotedItems, totalPrices);
   let receiptString = buildReceiptString(receipt);
+  require('fs').writeFileSync("tt.txt",receiptString);
   console.log(receiptString);
 }
-
 function formatTags(tags) {
   return _.map(tags, tag => {
     if (tag.includes('-')) {
@@ -26,7 +26,6 @@ function formatTags(tags) {
     }
   })
 }
-
 function _getExistElementByBarcodes(array, barcode) {
   return _.find(array, item => item.barcode === barcode);
 }
@@ -79,7 +78,19 @@ function buildReceipt(promotedItems, {totalPayPrice, totalSaved}) {
 }
 
 function buildReceiptString(receipt) {
-  // TODO
+  let totalprice = receipt.totalPayPrice;
+  let saved = receipt.totalSaved;
+  let receiptString = "";
+  for(let receiptItem of receipt.receiptItems){
+    receiptString += `名称:${receiptItem.name},数量:${receiptItem.count},单价:${receiptItem.price.toFixed(2)}(元),小计:${receiptItem.payPrice.toFixed(2)}(元)`;
+    receiptString += "\n";
+  }
+  const result = `***<没钱赚商店>收据***
+${receiptString}----------------------
+总计:${totalprice.toFixed(2)}(元)
+节省:${saved.toFixed(2)}(元)
+**********************`.trim();
+  return result;
 }
 
 module.exports = {
